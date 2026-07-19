@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Lv・％計算</title>
+
+<style>
+table{
+    border-collapse:collapse;
+}
+td,th{
+    border:1px solid #999;
+    padding:5px;
+    text-align:center;
+}
+
+input{
+    width:50px;
+    text-align:right;
+}
+.redCell{
+    background:#ffe5e5;
+}
+
+.blueCell{
+    background:#e6f2ff;
+}
+
+.yellowCell{
+    background:#fff9d6;
+}
+.result{
+    font-weight:bold;
+}
+.kyomaCell{
+    background:#efe3ff;
+}
+</style>
+
+</head>
+<body>
+ <h1>巨大魔力石シミュ</h1>
+<table id="tbl">
+<tr>
+    <th>段階</th>
+    <th class="redCell">赤</th>
+    <th class="blueCell">青</th>
+    <th class="yellowCell">黄色</th>
+    <th class="kyomaCell">巨大魔力石</th>
+    <th>Lv(その他)</th>
+    <th>%(その他)</th>
+</tr>
+</table>
+
+<br>
+
+<table>
+<tr>
+    <td colspan=""></td>
+    <td colspan="1">魔力石</td>
+    <td colspan="1">その他</td>
+    <td colspan="1">計</td>
+</tr>
+
+<tr>
+    <td>Lv</td>
+    <td id="lvSum" class="result">0</td>
+    <td id="otherLv" class="result">0</td>
+    <td id="totalLv" class="result">0</td>
+</tr>
+
+<tr>
+    <td>%</td>
+    <td id="perSum" class="result">0</td>
+    <td id="otherPer" class="result">0</td>
+    <td id="totalPer" class="result">0</td>
+</tr>
+
+<tr>
+    <td colspan="3">最終結果</td>
+    <td id="final" class="result">0</td>
+</tr>
+
+</table>
+
+<script>
+
+const table=document.getElementById("tbl");
+
+for(let i=1;i<=9;i++){
+
+    const tr=document.createElement("tr");
+
+    tr.innerHTML=`
+    <td>${i}</td>
+
+    <td class="redCell">
+        <input type="number" step="0.25" class="red value" value="2">
+        <select class="type">
+            <option value="lv" selected>Lv</option>
+            <option value="per">%</option>
+        </select>
+    </td>
+
+    <td class="blueCell">
+        <input type="number" step="0.25" class="blue value" value="2">
+        <select class="type">
+            <option value="lv">Lv</option>
+            <option value="per" selected>%</option>
+        </select>
+    </td>
+
+    <td class="yellowCell">
+        <input type="number" step="0.25" class="yellow value" value="1.5">
+        <select class="type">
+            <option value="lv">Lv</option>
+            <option value="per" selected>%</option>
+        </select>
+    </td>
+
+    ${i <= 3 ? `
+        <td class="kyomaCell">
+            <input type="number" step="0.5" class="kyoma" value="0">
+            <select class="type">
+                <option value="lv">Lv</option>
+                <option value="per">%</option>
+            </select>
+        </td>
+        ` : `
+        <td></td>
+        `}
+
+    <td><input type="number" step="0.25" class="lvOther"></td>
+    <td><input type="number" step="0.25" class="perOther"></td>
+`;
+
+    table.appendChild(tr);
+
+}
+
+document.querySelectorAll("input, select").forEach(i=>{
+    i.addEventListener("input",calc);
+    i.addEventListener("change",calc);
+});
+
+calc();
+
+function sum(cls){
+
+    let total=0;
+
+    document.querySelectorAll("."+cls).forEach(i=>{
+        total+=Number(i.value)||0;
+    });
+
+    return total;
+}
+
+function calc(){
+
+    let lv = 0;
+let per = 0;
+
+document.querySelectorAll("#tbl tr").forEach((tr, index) => {
+
+    if(index === 0) return;
+
+    // 赤
+    let input = tr.cells[1].querySelector("input");
+    let type = tr.cells[1].querySelector("select").value;
+    if(type === "lv") lv += Number(input.value) || 0;
+    else per += Number(input.value) || 0;
+
+    // 青
+    input = tr.cells[2].querySelector("input");
+    type = tr.cells[2].querySelector("select").value;
+    if(type === "lv") lv += Number(input.value) || 0;
+    else per += Number(input.value) || 0;
+
+    // 黄
+    input = tr.cells[3].querySelector("input");
+    type = tr.cells[3].querySelector("select").value;
+    if(type === "lv") lv += Number(input.value) || 0;
+    else per += Number(input.value) || 0;
+
+    // 巨大魔力石
+    if (tr.cells[4].querySelector("input")) {
+
+        input = tr.cells[4].querySelector("input");
+        type = tr.cells[4].querySelector("select").value;
+
+        if(type === "lv"){
+            lv += Number(input.value) || 0;
+        }else{
+            per += Number(input.value) || 0;
+        }
+
+    }
+
+});
+
+const otherLv = sum("lvOther");
+const otherPer = sum("perOther");
+
+const totalLv = lv + otherLv;
+const totalPer = per + otherPer;
+
+    document.getElementById("lvSum").textContent = lv;
+    document.getElementById("perSum").textContent = per;
+
+    document.getElementById("otherLv").textContent=otherLv;
+    document.getElementById("otherPer").textContent=otherPer;
+
+    document.getElementById("totalLv").textContent=totalLv;
+    document.getElementById("totalPer").textContent=totalPer;
+
+    document.getElementById("final").textContent=(totalLv*totalPer).toFixed(2).replace(/\.00$/,"");
+
+}
+
+</script>
+</body>
+</html>
