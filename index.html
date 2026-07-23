@@ -2,44 +2,25 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Lv・％計算</title>
+<title>魔力石シミュもどき</title>
 
 <style>
-table{
-    border-collapse:collapse;
-}
-td,th{
-    border:1px solid #999;
-    padding:5px;
-    text-align:center;
-}
-
-input{
-    width:50px;
-    text-align:right;
-}
-.redCell{
-    background:#ffe5e5;
-}
-
-.blueCell{
-    background:#e6f2ff;
-}
-
-.yellowCell{
-    background:#fff9d6;
-}
-.result{
-    font-weight:bold;
-}
-.kyomaCell{
-    background:#efe3ff;
-}
+h1          {text-align: center;}
+table       {border-collapse:collapse; margin: 20px auto;}
+td,th       {border:1px solid #999; padding:5px; text-align:center;}
+input       {width:50px; text-align:right;}
+.waku       {width: fit-content; margin: 40px auto;}
+.redCell    {background:#ffe5e5;}
+.blueCell   {background:#e6f2ff;}
+.yellowCell {background:#fff9d6;}
+.kyomaCell  {background:#efe3ff;}
+.result     {font-weight:bold;}
 </style>
 
 </head>
 <body>
- <h1>巨大魔力石シミュ</h1>
+<div class="waku">
+<h1>魔力石シミュもどき</h1>
 <table id="tbl">
 <tr>
     <th>段階</th>
@@ -47,19 +28,16 @@ input{
     <th class="blueCell">青</th>
     <th class="yellowCell">黄色</th>
     <th class="kyomaCell">巨大魔力石</th>
-    <th>Lv(その他)</th>
-    <th>%(その他)</th>
+    <th>その他</th>
 </tr>
 </table>
 
-<br>
-
 <table>
 <tr>
-    <td colspan=""></td>
-    <td colspan="1">魔力石</td>
-    <td colspan="1">その他</td>
-    <td colspan="1">計</td>
+    <td></td>
+    <td>魔力石</td>
+    <td>その他</td>
+    <td>計</td>
 </tr>
 
 <tr>
@@ -82,7 +60,7 @@ input{
 </tr>
 
 </table>
-
+</div>
 <script>
 
 const table=document.getElementById("tbl");
@@ -128,11 +106,16 @@ for(let i=1;i<=9;i++){
         </td>
         ` : `
         <td></td>
-        `}
+    `}
 
-    <td><input type="number" step="0.25" class="lvOther"></td>
-    <td><input type="number" step="0.25" class="perOther"></td>
-`;
+    <td>
+        <input type="number" step="0.25" class="other value" value="0">
+        <select class="type">
+            <option value="lv">Lv</option>
+            <option value="per">%</option>
+        </select>
+    </td>
+    `;
 
     table.appendChild(tr);
 
@@ -145,68 +128,81 @@ document.querySelectorAll("input, select").forEach(i=>{
 
 calc();
 
-function sum(cls){
-
-    let total=0;
-
-    document.querySelectorAll("."+cls).forEach(i=>{
-        total+=Number(i.value)||0;
-    });
-
-    return total;
-}
-
 function calc(){
 
     let lv = 0;
-let per = 0;
+    let per = 0;
 
-document.querySelectorAll("#tbl tr").forEach((tr, index) => {
+    let otherLv = 0;
+    let otherPer = 0;
 
-    if(index === 0) return;
+    document.querySelectorAll("#tbl tr").forEach((tr, index) => {
 
-    // 赤
-    let input = tr.cells[1].querySelector("input");
-    let type = tr.cells[1].querySelector("select").value;
-    if(type === "lv") lv += Number(input.value) || 0;
-    else per += Number(input.value) || 0;
+        if(index === 0) return;
 
-    // 青
-    input = tr.cells[2].querySelector("input");
-    type = tr.cells[2].querySelector("select").value;
-    if(type === "lv") lv += Number(input.value) || 0;
-    else per += Number(input.value) || 0;
+        // ------------------------------------------ 赤
+        let input = tr.cells[1].querySelector("input");
+        let type = tr.cells[1].querySelector("select").value;
 
-    // 黄
-    input = tr.cells[3].querySelector("input");
-    type = tr.cells[3].querySelector("select").value;
-    if(type === "lv") lv += Number(input.value) || 0;
-    else per += Number(input.value) || 0;
-
-    // 巨大魔力石
-    if (tr.cells[4].querySelector("input")) {
-
-        input = tr.cells[4].querySelector("input");
-        type = tr.cells[4].querySelector("select").value;
-
-        if(type === "lv"){
+        if (type === "lv") {
             lv += Number(input.value) || 0;
-        }else{
+        } else {
             per += Number(input.value) || 0;
         }
 
-    }
+        // ------------------------------------------ 青
+        input = tr.cells[2].querySelector("input");
+        type = tr.cells[2].querySelector("select").value;
+
+        if (type === "lv") {
+            lv += Number(input.value) || 0;
+        } else {
+            per += Number(input.value) || 0;
+        }
+
+        // ------------------------------------------ 黄
+        input = tr.cells[3].querySelector("input");
+        type = tr.cells[3].querySelector("select").value;
+
+        if (type === "lv") {
+            lv += Number(input.value) || 0;
+        } else {
+            per += Number(input.value) || 0;
+        }
+
+        // ------------------------------------------ 巨大魔力石
+        if (tr.cells[4].querySelector("input")) {
+
+            input = tr.cells[4].querySelector("input");
+            type = tr.cells[4].querySelector("select").value;
+
+            if(type === "lv"){
+        lv += Number(input.value) || 0;
+            }else{
+        per += Number(input.value) || 0;
+            }
+
+        }
+
+        //------------------------------------------  その他
+        input = tr.cells[5].querySelector("input");
+        type = tr.cells[5].querySelector("select").value;
+
+        if (type === "lv") {
+            lv += Number(input.value) || 0;
+            otherLv += Number(input.value) || 0;
+        } else {
+            per += Number(input.value) || 0;
+            otherPer += Number(input.value) || 0;
+        }
 
 });
 
-const otherLv = sum("lvOther");
-const otherPer = sum("perOther");
+const totalLv = lv;
+const totalPer = per;
 
-const totalLv = lv + otherLv;
-const totalPer = per + otherPer;
-
-    document.getElementById("lvSum").textContent = lv;
-    document.getElementById("perSum").textContent = per;
+    document.getElementById("lvSum").textContent = lv - otherLv;
+    document.getElementById("perSum").textContent = per - otherPer;
 
     document.getElementById("otherLv").textContent=otherLv;
     document.getElementById("otherPer").textContent=otherPer;
